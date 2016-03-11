@@ -70,6 +70,12 @@ class SystemConfig
         return false;
     }
 
+    public static function setShutdownFunc($callable)
+    {
+        register_shutdown_function($callable);
+        self::buildHistory('', $callable);
+    }
+
     private static function buildHistory($oldValue, $newValue)
     {
         $backtrace = debug_backtrace();

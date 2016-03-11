@@ -72,7 +72,8 @@ class System
         SystemConfig::setTimeLimit(0);
         SystemConfig::errorReporting(E_ALL);
         SystemConfig::setTimeZone('Asia/Chongqing');
-        SystemConfig::iniSetting('memory_limit', '256M');
+        SystemConfig::iniSetting('memory_limit', '512M');
+        SystemConfig::setShutdownFunc(array('\Core\System', 'shutdown'));
     }
 
     private static function checkDependent()
@@ -225,6 +226,16 @@ class System
     public static function end()
     {
         exit(0);
+    }
+
+    public static function shutdown()
+    {
+        $e = error_get_last();
+        if ($e)
+        {
+            UI::console(date('Y-m-d H:i:s') . " shutdown with {$e['type']} \n at {$e['file']} : {$e['line']} with {$e['message']} ");
+        }
+        
     }
 
 }
