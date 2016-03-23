@@ -137,52 +137,52 @@ class WorkerManager
 
         foreach ($this->workerInstancesPool as $worker)
         {
-            if (count($worker) > 1)
+            
+            $pids = array();
+            foreach ($worker as $w)
             {
-                $pids = array();
-                foreach ($worker as $w)
+                $pid = pcntl_fork();
+                if (-1 == $pid)
                 {
-                    $pid = pcntl_fork();
-                    if (-1 == $pid)
-                    {
-                        throw new SDMException("fork failed");
-                    }
-                    else if ($pid)
-                    {
-                        $pids[$w->getName()] = $pid;
-                    }
-                    else 
-                    {
-                        foreach ($this->needReleaseResourceInterface as $interface)
-                        {
-                            call_user_func($interface);
-                        }
-                        $this->runWorkerAndEnd($w);
-                    }
-
+                    throw new SDMException("fork failed");
                 }
-                
-                $exception = false;
-
-                foreach ($pids as $name => $pid)
+                else if ($pid)
                 {
-                    pcntl_waitpid($pid, $status, WUNTRACED);
-                    if ($status != 0)
+                    $pids[$w->getName()] = $pid;
+                }
+                else 
+                {
+                    foreach ($this->needReleaseResourceInterface as $interface)
                     {
-                        UI::console($name . " exception exit with code : " . $status);
+                        call_user_func($interface);
+                    }
+                    $this->runWorkerAndEnd($w);
+                }
+            }
+                
+            $exception = false;
+
+            foreach ($pids as $name => $pid)
+            {
+                pcntl_waitpid($pid, $status, WUNTRACED);
+                if ($status != 0)
+                {
+                    UI::console($name . " exception exit with code : " . $status);
+                    if ($status == 65280)
+                    {
+                        UI::console($name . " warnning . OOM ");
+                    }
+                    else
+                    {
                         $exception = true;
                     }
                 }
-                if ($exception)
-                {
-                    throw new SDMException("child process exit with exception");
-                }
-                
             }
-            else
+            if ($exception)
             {
-                $this->runWorker($worker[0]);
+                throw new SDMException("child process exit with exception");
             }
+                
         }
 
     }

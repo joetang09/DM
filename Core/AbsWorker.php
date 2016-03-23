@@ -165,6 +165,7 @@ abstract class AbsWorker
                 
                 
             }
+            $this->dumpWorkerRuntimeData();
         }
         
     }
