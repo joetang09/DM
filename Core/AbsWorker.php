@@ -66,7 +66,7 @@ abstract class AbsWorker
             $runtimeData = json_decode($runtimeData, true);
             $this->envParams = $runtimeData['envParams'];
             $this->gStartCursor = $runtimeData['gStartCursor'];
-            $this->gEndCursor = $runtimeData['gEndCursor'];
+            // $this->gEndCursor = $runtimeData['gEndCursor'];
             $this->dealNumberTimes = $runtimeData['dealNumberTimes'];
             $this->crtStartCursor = $runtimeData['crtStartCursor'];
             $this->dealCursor = $runtimeData['dealCursor'];
@@ -82,7 +82,7 @@ abstract class AbsWorker
     {
         while (true)
         {
-            if ($this->gEndCursor > 0 && $this->gEndCursor >= $this->dealCursor)
+            if ($this->gEndCursor > 0 && $this->gEndCursor <= $this->dealCursor)
             {
                 $this->workerLogger->log('deal over', 'deal');
                 break;
