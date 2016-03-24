@@ -80,9 +80,10 @@ abstract class AbsWorker
 
     public function run()
     {
+        $dataFetchOver = false;
         while (true)
         {
-            if ($this->gEndCursor > 0 && $this->gEndCursor <= $this->dealCursor)
+            if (($this->gEndCursor > 0 && $this->gEndCursor <= $this->dealCursor) || $dataFetchOver)
             {
                 $this->workerLogger->log('deal over', 'deal');
                 break;
@@ -112,11 +113,12 @@ abstract class AbsWorker
             $preDealData = array();
             foreach ($raw as $c => $data)
             {
-                if ($this->gEndCursor < 0 || $c < $this->gEndCursor)
+                if ($this->gEndCursor < 0 || $c <= $this->gEndCursor)
                 {
                     $preDealData[$c] = new WorkerMaterial($c, $data, 1);
                     $this->workerLogger->log('success, the cursor : ' . $c, 'worker_masterial_build');
                 } else {
+                    $dataFetchOver = true;
                     $this->workerLogger->log('over, the end cursor : ' . $c, 'worker_masterial_build');
                 }
 
