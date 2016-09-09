@@ -17,4 +17,8 @@ class Demo1WorkerConfig
     public static $runSort = 100;
 
     public static $dealNumberTimes = 10;
+
+    public static $fork = 10;
+
+    public static $forkGap = 1000000000;
 }
